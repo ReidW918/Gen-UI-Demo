@@ -1,0 +1,708 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GenUI Portal – AT&amp;T Workplace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0,0&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;-webkit-font-smoothing:antialiased;}
+html,body{margin:0;padding:0;height:100%;overflow:hidden;}
+body{background:#FAF9FF;font-family:Figtree,sans-serif;color:#1A1A24;}
+::-webkit-scrollbar{width:8px;height:8px}
+::-webkit-scrollbar-thumb{background:#dcdbe6;border-radius:8px}
+input[type=range]{-webkit-appearance:none;appearance:none;height:6px;border-radius:999px;background:#E3E2EE;outline:none;width:100%;}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:20px;height:20px;border-radius:999px;background:#0057B8;cursor:pointer;box-shadow:0 1px 4px rgba(0,87,184,.4);}
+input[type=range]::-moz-range-thumb{width:20px;height:20px;border-radius:999px;background:#0057B8;cursor:pointer;border:none;}
+.ms{font-family:'Material Symbols Rounded';font-style:normal;font-weight:normal;display:inline-block;line-height:1;text-transform:none;letter-spacing:normal;word-wrap:normal;white-space:nowrap;direction:ltr;-webkit-font-feature-settings:'liga';font-feature-settings:'liga';}
+@keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+@keyframes popIn{from{opacity:0;transform:translateY(8px) scale(.98)}to{opacity:1;transform:translateY(0) scale(1)}}
+@keyframes dotB{0%,80%,100%{transform:translateY(0);opacity:.4}40%{transform:translateY(-5px);opacity:1}}
+@keyframes pulseRing{0%{transform:scale(.8);opacity:.7}70%{transform:scale(2.2);opacity:0}100%{opacity:0}}
+@keyframes dashMove{to{stroke-dashoffset:-24}}
+@keyframes sweep{0%{opacity:.25}50%{opacity:.9}100%{opacity:.25}}
+
+#app{display:flex;flex-direction:column;height:100vh;overflow:hidden;}
+#feed-header{flex:none;display:flex;align-items:center;justify-content:space-between;padding:14px 20px;background:rgba(250,249,255,.82);backdrop-filter:blur(14px);border-bottom:1px solid rgba(20,20,40,.07);z-index:20;}
+#feed-main{flex:1;overflow-y:auto;overflow-x:hidden;}
+#feed-inner{max-width:600px;margin:0 auto;padding:24px 18px 28px;display:flex;flex-direction:column;gap:26px;}
+#input-area{flex:none;background:linear-gradient(to top,#FAF9FF 62%,rgba(250,249,255,0));padding:8px 18px 18px;z-index:20;}
+#input-wrap{max-width:600px;margin:0 auto;}
+.chip-row{display:flex;gap:8px;overflow-x:auto;padding:4px 0 11px;scrollbar-width:none;}
+.chip-row::-webkit-scrollbar{display:none;}
+#input-form{display:flex;align-items:center;gap:8px;background:#fff;border:1px solid rgba(20,20,40,.1);border-radius:999px;padding:7px 7px 7px 18px;box-shadow:0 8px 30px -14px rgba(20,20,40,.4);}
+#input-field{flex:1;min-width:0;border:none;outline:none;background:transparent;font-family:Figtree,sans-serif;font-size:15px;color:#1A1A24;padding:8px 0;}
+#input-field::placeholder{color:#9A98AC;}
+#input-submit{flex:none;border:none;background:#0057B8;color:#fff;width:42px;height:42px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;}
+.feed-seg{display:flex;flex-direction:column;gap:14px;animation:fadeUp .45s cubic-bezier(.16,1,.3,1) both;}
+.card{background:#fff;border-radius:22px;border:1px solid rgba(20,20,40,.06);box-shadow:0 4px 20px -14px rgba(20,20,40,.4);}
+.card-p{padding:18px;}
+.label-xs{font-size:11px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;}
+.toggle-track{flex:none;width:46px;height:27px;border-radius:999px;border:none;padding:0;cursor:pointer;position:relative;transition:background .2s;}
+.toggle-knob{position:absolute;top:3px;width:21px;height:21px;border-radius:50%;background:#fff;transition:left .2s;box-shadow:0 1px 3px rgba(0,0,0,.3);}
+.btn-primary{border:none;background:#0057B8;color:#fff;font-family:Figtree,sans-serif;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;}
+.btn-primary:hover{background:#004ea3;}
+.pulse-dot{position:relative;width:8px;height:8px;display:inline-block;}
+.pulse-dot::before{content:'';position:absolute;inset:0;border-radius:50%;background:currentColor;}
+.pulse-dot::after{content:'';position:absolute;inset:0;border-radius:50%;background:currentColor;animation:pulseRing 2s infinite;}
+</style>
+</head>
+<body>
+<div id="app">
+  <header id="feed-header">
+    <div style="display:flex;align-items:center;gap:11px;cursor:pointer;" id="btn-go-home">
+      <svg width="34" height="34" viewBox="0 0 32 32" aria-hidden="true"><circle cx="16" cy="16" r="15" fill="#0057B8"/><g stroke="#fff" stroke-width="2.1" stroke-linecap="round" opacity=".92"><line x1="9.5" y1="12" x2="22.5" y2="12"/><line x1="7" y1="16" x2="25" y2="16"/><line x1="9.5" y1="20" x2="22.5" y2="20"/></g></svg>
+      <div style="display:flex;flex-direction:column;line-height:1.05;">
+        <span style="font-weight:700;font-size:17px;letter-spacing:-.02em;">GenUI Portal</span>
+        <span style="font-size:11px;font-weight:500;color:#7B7A8C;letter-spacing:.02em;">AT&amp;T Workplace</span>
+      </div>
+    </div>
+    <button id="btn-new" style="display:flex;align-items:center;gap:6px;border:1px solid rgba(20,20,40,.1);background:#fff;color:#4B4A5C;font-family:Figtree,sans-serif;font-size:13px;font-weight:600;padding:8px 13px;border-radius:999px;cursor:pointer;">
+      <span class="ms" style="font-size:18px;">edit_square</span>New
+    </button>
+  </header>
+
+  <main id="feed-main">
+    <div id="feed-inner"></div>
+  </main>
+
+  <div id="input-area">
+    <div id="input-wrap">
+      <div id="chip-row" class="chip-row"></div>
+      <form id="input-form">
+        <span class="ms" style="font-size:22px;color:#0057B8;">auto_awesome</span>
+        <input id="input-field" type="text" placeholder="What do you need, Alex?" autocomplete="off">
+        <button id="input-submit" type="submit" class="btn-primary">
+          <span class="ms" style="font-size:22px;">arrow_upward</span>
+        </button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script>
+'use strict';
+
+// ─── State ───────────────────────────────────────────────────────────────────
+const S = {
+  feed: [{ id: 0, prompt: null, kind: 'home', streaming: false }],
+  input: '',
+  nextId: 1,
+  temp: 70,
+  lightOn: false,
+  dndOn: false,
+  castOn: true,
+  claimed: false,
+  ticketDone: false,
+  credsDone: false,
+  bev: 'water',
+  commuteMode: 'arrive',
+  evOn: false,
+  seatDone: false,
+};
+
+function set(delta) {
+  const d = typeof delta === 'function' ? delta(S) : delta;
+  Object.assign(S, d);
+  renderFeed();
+}
+
+// ─── Routing ──────────────────────────────────────────────────────────────────
+function route(text) {
+  const t = (text || '').toLowerCase();
+  if (/guest|sarah|lobby|visitor/.test(t)) return 'guest';
+  if (/broken|coffee|fix|machine|facilit|repair|maintenance|issue|ticket|out of order/.test(t)) return 'facility';
+  if (/park|parking|garage|\bspot\b|\bcar\b|shuttle|\bbus\b|commut|ride home|drive home|transit|leaving work|head(ing)? home|go home|valet/.test(t)) return 'commute';
+  if (/huddle|smart.?room|find.*room|book.*room|available room/.test(t)) return 'adhoc';
+  if (/arriv|morning|headquart|\bhq\b|welcome|i.?m here/.test(t)) return 'arrival';
+  if (/agenda|schedul|task|calendar|meeting|today/.test(t)) return 'agenda';
+  if (/network|status|health|uptime|latenc|node/.test(t)) return 'home';
+  return 'home';
+}
+
+function push(prompt, kind) {
+  const id = ++S.nextId;
+  set(s => ({ feed: [...s.feed, { id, prompt, kind, streaming: true }], input: '' }));
+  setTimeout(() => {
+    set(s => ({ feed: s.feed.map(f => f.id === id ? { ...f, streaming: false } : f) }));
+    const main = document.getElementById('feed-main');
+    if (main) main.scrollTo({ top: main.scrollHeight, behavior: 'smooth' });
+  }, 850);
+}
+
+function goHome() {
+  set({ feed: [{ id: 0, prompt: null, kind: 'home', streaming: false }], nextId: 1, input: '' });
+  const main = document.getElementById('feed-main');
+  if (main) main.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// ─── Helpers ──────────────────────────────────────────────────────────────────
+const esc = s => String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+
+function trackStyle(on) {
+  return `flex:none;width:46px;height:27px;border-radius:999px;border:none;padding:0;cursor:pointer;position:relative;transition:background .2s;background:${on ? '#0057B8' : '#D6D5E2'};`;
+}
+function knobStyle(on) {
+  return `position:absolute;top:3px;left:${on ? '22px' : '3px'};width:21px;height:21px;border-radius:50%;background:#fff;transition:left .2s;box-shadow:0 1px 3px rgba(0,0,0,.3);`;
+}
+function segBtnStyle(active) {
+  return `flex:1;display:flex;align-items:center;justify-content:center;gap:7px;font-family:Figtree,sans-serif;font-size:13px;font-weight:600;padding:10px;border-radius:11px;border:none;cursor:pointer;transition:all .15s;`
+    + (active ? `background:#fff;color:#0057B8;box-shadow:0 2px 8px -4px rgba(20,20,40,.35);` : `background:transparent;color:#7B7A8C;`);
+}
+function bevBtnStyle(active) {
+  return `flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;font-family:Figtree,sans-serif;font-size:13px;font-weight:600;padding:14px 6px;border-radius:14px;cursor:pointer;transition:all .15s;`
+    + (active ? `border:1.5px solid #0057B8;background:#EAF1FB;color:#0057B8;` : `border:1.5px solid rgba(20,20,40,.1);background:#fff;color:#6B6A7C;`);
+}
+
+const now = new Date();
+const hour = now.getHours();
+const greeting = hour < 12 ? 'Good morning' : hour < 18 ? 'Good afternoon' : 'Good evening';
+const periodLabel = hour < 12 ? 'MORNING BRIEF' : hour < 18 ? 'AFTERNOON BRIEF' : 'EVENING BRIEF';
+
+const introMap = {
+  home:     'Here is everything on deck for your day, Alex.',
+  agenda:   'Here is your agenda and key actions for today.',
+  arrival:  'Welcome to Headquarters. Here is your context for the morning.',
+  adhoc:    'Found an open smart-room on Floor 4 — ready when you are.',
+  facility: 'Got it — I detected the issue from your message. Here is the facility report.',
+  guest:    'Heads up — your guest just arrived. Here is access control.',
+  commute:  'Here is your commute — smart parking and the campus shuttle, for arriving or heading home.',
+};
+
+// ─── Scenario renderers ────────────────────────────────────────────────────────
+function renderHome() {
+  return `
+  <div style="border-radius:24px;padding:22px;background:linear-gradient(140deg,#003E84 0%,#0057B8 55%,#1E73C8 100%);color:#fff;box-shadow:0 14px 34px -16px rgba(0,62,132,.65);position:relative;overflow:hidden;">
+    <div style="position:absolute;right:-30px;top:-30px;width:150px;height:150px;border-radius:50%;background:radial-gradient(circle,rgba(255,255,255,.16),transparent 70%);"></div>
+    <div style="position:relative;">
+      <span style="font-size:12px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:rgba(255,255,255,.7);">${periodLabel}</span>
+      <h1 style="margin:6px 0 4px;font-size:26px;font-weight:700;letter-spacing:-.02em;">${greeting}, Alex.</h1>
+      <p style="margin:0;font-size:14px;color:rgba(255,255,255,.78);">Ready to navigate your day?</p>
+    </div>
+  </div>
+
+  <div class="card" style="overflow:hidden;">
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:17px 18px 12px;">
+      <div style="display:flex;align-items:center;gap:9px;"><span class="ms" style="font-size:20px;color:#0057B8;">calendar_today</span><span style="font-weight:700;font-size:15px;">Today at a Glance</span></div>
+      <span style="font-size:11px;font-weight:700;letter-spacing:.06em;color:#7B7A8C;background:#F1F0F8;padding:4px 9px;border-radius:999px;">3 EVENTS</span>
+    </div>
+    <div style="padding:0 18px;display:flex;flex-direction:column;">
+      <div style="display:flex;align-items:center;gap:13px;padding:13px 0;border-top:1px solid #F0EFF6;">
+        <div style="flex:none;width:42px;text-align:center;"><div style="font-size:15px;font-weight:700;color:#0057B8;line-height:1;">10</div><div style="font-size:10px;font-weight:600;color:#9A98AC;">AM</div></div>
+        <div style="flex:1;min-width:0;"><div style="font-weight:600;font-size:14px;">Q3 Strategy Review</div><div style="font-size:12px;color:#8A899B;">10:00 – 11:30 AM · Room 4B</div></div>
+        <span class="ms" style="font-size:20px;color:#C4C3D2;">chevron_right</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:13px;padding:13px 0;border-top:1px solid #F0EFF6;">
+        <div style="flex:none;width:42px;text-align:center;"><div style="font-size:15px;font-weight:700;color:#0057B8;line-height:1;">1</div><div style="font-size:10px;font-weight:600;color:#9A98AC;">PM</div></div>
+        <div style="flex:1;min-width:0;"><div style="font-weight:600;font-size:14px;">Vendor Sync: IoT Platforms</div><div style="font-size:12px;color:#8A899B;">1:00 – 2:00 PM · WebEx</div></div>
+        <span class="ms" style="font-size:20px;color:#C4C3D2;">chevron_right</span>
+      </div>
+    </div>
+    <button data-action="open-agenda" style="width:100%;border:none;border-top:1px solid #F0EFF6;background:#FBFBFE;color:#0057B8;font-family:Figtree,sans-serif;font-weight:600;font-size:13px;padding:13px;cursor:pointer;">View Full Calendar</button>
+  </div>
+
+  <div class="card card-p">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">
+      <div style="display:flex;align-items:center;gap:9px;"><span class="ms" style="font-size:20px;color:#0057B8;">checklist</span><span style="font-weight:700;font-size:15px;">Action Items</span></div>
+      <span style="font-size:11px;font-weight:700;letter-spacing:.06em;color:#7B7A8C;background:#F1F0F8;padding:4px 9px;border-radius:999px;">5 TASKS</span>
+    </div>
+    <div style="display:flex;flex-direction:column;">
+      <label style="display:flex;align-items:center;gap:11px;padding:10px 0;border-top:1px solid #F0EFF6;font-size:14px;cursor:pointer;"><span style="flex:none;width:19px;height:19px;border-radius:6px;border:2px solid #CFCEDC;"></span>Approve Q4 budget proposal</label>
+      <label style="display:flex;align-items:center;gap:11px;padding:10px 0;border-top:1px solid #F0EFF6;font-size:14px;cursor:pointer;"><span style="flex:none;width:19px;height:19px;border-radius:6px;border:2px solid #CFCEDC;"></span>Review network anomaly report <span style="color:#8A899B;margin-left:4px;">(Site 42)</span></label>
+      <label style="display:flex;align-items:center;gap:11px;padding:10px 0;border-top:1px solid #F0EFF6;font-size:14px;cursor:pointer;"><span style="flex:none;width:19px;height:19px;border-radius:6px;border:2px solid #CFCEDC;"></span>Update emergency contact protocols</label>
+    </div>
+  </div>
+
+  <div style="border-radius:22px;overflow:hidden;background:#0A1222;color:#fff;box-shadow:0 14px 34px -18px rgba(10,18,34,.8);position:relative;">
+    <div style="position:absolute;inset:0;opacity:.5;">
+      <svg width="100%" height="100%" viewBox="0 0 560 200" preserveAspectRatio="none">
+        <defs><linearGradient id="nh" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#0E3A4A"/><stop offset="1" stop-color="#0A1222"/></linearGradient></defs>
+        <rect width="560" height="200" fill="url(#nh)"/>
+        <g stroke="#1FB6C9" stroke-width="1" opacity=".18">
+          <line x1="0" y1="50" x2="560" y2="50"/><line x1="0" y1="100" x2="560" y2="100"/><line x1="0" y1="150" x2="560" y2="150"/>
+          <line x1="140" y1="0" x2="140" y2="200"/><line x1="280" y1="0" x2="280" y2="200"/><line x1="420" y1="0" x2="420" y2="200"/>
+        </g>
+        <polyline points="0,150 90,120 170,135 250,95 340,110 430,70 560,88" fill="none" stroke="#2DE0C8" stroke-width="2.5" opacity=".9"/>
+      </svg>
+    </div>
+    <div style="position:relative;padding:18px;">
+      <div style="display:flex;align-items:center;justify-content:space-between;">
+        <span style="font-size:11px;font-weight:700;letter-spacing:.1em;color:#7FE8DA;">NETWORK HEALTH</span>
+        <span style="display:flex;align-items:center;gap:6px;font-size:12px;font-weight:700;color:#5DEFC0;">
+          <span style="position:relative;width:8px;height:8px;display:inline-block;"><span style="position:absolute;inset:0;border-radius:50%;background:#33E6A8;"></span><span style="position:absolute;inset:0;border-radius:50%;background:#33E6A8;animation:pulseRing 2s infinite;"></span></span>Optimal
+        </span>
+      </div>
+      <div style="font-size:20px;font-weight:700;margin:12px 0 4px;letter-spacing:-.01em;">All nodes nominal</div>
+      <p style="margin:0 0 16px;font-size:13px;color:rgba(255,255,255,.6);line-height:1.5;">Primary nodes across the Northeast region are operating within expected parameters.</p>
+      <div style="display:flex;gap:10px;">
+        <div style="flex:1;background:rgba(255,255,255,.06);border:1px solid rgba(127,232,218,.18);border-radius:13px;padding:11px 13px;"><div style="font-size:10px;font-weight:700;letter-spacing:.08em;color:#7FE8DA;">LATENCY</div><div style="font-size:18px;font-weight:700;margin-top:2px;">12<span style="font-size:12px;color:rgba(255,255,255,.6);font-weight:600;"> ms avg</span></div></div>
+        <div style="flex:1;background:rgba(255,255,255,.06);border:1px solid rgba(127,232,218,.18);border-radius:13px;padding:11px 13px;"><div style="font-size:10px;font-weight:700;letter-spacing:.08em;color:#7FE8DA;">UPTIME</div><div style="font-size:18px;font-weight:700;margin-top:2px;">99.99<span style="font-size:12px;color:rgba(255,255,255,.6);font-weight:600;"> %</span></div></div>
+      </div>
+    </div>
+  </div>`;
+}
+
+function renderAgenda() {
+  return `
+  <div class="card" style="padding:18px;border-left:4px solid #0057B8;">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:9px;">
+      <span class="label-xs" style="color:#0057B8;">EVENT · 10:00 AM</span>
+      <img src="https://i.pravatar.cc/64?img=12" alt="" style="width:30px;height:30px;border-radius:50%;border:2px solid #EAF1FB;">
+    </div>
+    <h3 style="margin:0 0 6px;font-size:17px;font-weight:700;">Quarterly Review Meeting</h3>
+    <p style="margin:0 0 14px;font-size:13px;color:#8A899B;line-height:1.55;">Review Q3 performance metrics and discuss Q4 strategic goals with the executive team. Please review the attached deck prior to joining.</p>
+    <div style="display:flex;align-items:center;justify-content:space-between;">
+      <span style="font-size:12px;color:#8A899B;font-weight:500;">12 attendees</span>
+      <button class="btn-primary" style="font-family:Figtree,sans-serif;font-size:13px;font-weight:600;padding:10px 18px;border-radius:999px;">
+        <span class="ms" style="font-size:18px;">videocam</span>Join Call
+      </button>
+    </div>
+  </div>
+
+  <div class="card card-p">
+    <span class="label-xs" style="color:#0057B8;">EVENT · 1:00 PM</span>
+    <h3 style="margin:6px 0;font-size:17px;font-weight:700;">Focus Time</h3>
+    <p style="margin:0 0 14px;font-size:13px;color:#8A899B;line-height:1.55;">Scheduled block for deep work. Notifications will be muted if you enable Do Not Disturb.</p>
+    <button data-action="toggle-dnd" style="display:flex;align-items:center;gap:8px;border:1px solid rgba(20,20,40,.12);background:${S.dndOn ? '#0057B8' : '#fff'};color:${S.dndOn ? '#fff' : '#3A3947'};font-family:Figtree,sans-serif;font-weight:600;font-size:13px;padding:10px 16px;border-radius:999px;cursor:pointer;">
+      <span class="ms" style="font-size:18px;">notifications_off</span>${S.dndOn ? 'Do Not Disturb On' : 'Enable Do Not Disturb'}
+    </button>
+  </div>
+
+  <div class="card card-p">
+    <span class="label-xs" style="color:#C2410C;">TASK · DUE TODAY</span>
+    <h3 style="margin:6px 0;font-size:17px;font-weight:700;">Submit Expense Report</h3>
+    <p style="margin:0 0 12px;font-size:13px;color:#8A899B;line-height:1.55;">Your September travel expenses are pending submission.</p>
+    <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:14px;">
+      <div style="display:flex;align-items:center;gap:9px;font-size:13px;color:#4B4A5C;background:#F7F7FB;border-radius:10px;padding:9px 12px;"><span class="ms" style="font-size:18px;color:#0057B8;">flight</span>Flight to Austin</div>
+      <div style="display:flex;align-items:center;gap:9px;font-size:13px;color:#4B4A5C;background:#F7F7FB;border-radius:10px;padding:9px 12px;"><span class="ms" style="font-size:18px;color:#0057B8;">hotel</span>Hotel Accommodations</div>
+    </div>
+    <button class="btn-primary" style="width:100%;background:#EAF1FB;color:#0057B8;font-family:Figtree,sans-serif;font-weight:600;font-size:14px;padding:12px;border-radius:14px;">Open Form</button>
+  </div>
+
+  <div class="card card-p">
+    <span class="label-xs" style="color:#7B7A8C;">TASK · DUE FRIDAY</span>
+    <h3 style="margin:6px 0;font-size:17px;font-weight:700;">Security Training</h3>
+    <p style="margin:0 0 14px;font-size:13px;color:#8A899B;line-height:1.55;">Annual mandatory Data Privacy &amp; Information Security module. Est. 30 mins.</p>
+    <div style="display:flex;align-items:center;gap:12px;">
+      <div style="flex:1;height:7px;border-radius:999px;background:#EEEDF5;overflow:hidden;"><div style="width:8%;height:100%;background:#0057B8;border-radius:999px;"></div></div>
+      <span style="font-size:12px;font-weight:700;color:#8A899B;">0%</span>
+      <button class="btn-primary" style="font-family:Figtree,sans-serif;font-size:13px;font-weight:600;padding:9px 16px;border-radius:999px;">Start</button>
+    </div>
+  </div>`;
+}
+
+function renderArrival() {
+  const lt = S.lightOn;
+  return `
+  <div class="card" style="overflow:hidden;">
+    <div style="padding:18px 18px 14px;">
+      <div style="display:flex;align-items:flex-start;gap:13px;">
+        <div style="flex:none;width:42px;height:42px;border-radius:13px;background:#EAF1FB;display:flex;align-items:center;justify-content:center;"><span class="ms" style="font-size:23px;color:#0057B8;">meeting_room</span></div>
+        <div><h3 style="margin:0;font-size:16px;font-weight:700;">Studio 3C Reserved</h3><p style="margin:3px 0 0;font-size:13px;color:#8A899B;line-height:1.5;">Pre-conditioned for your 10:00 AM whiteboard session. Team arrives in ~15 min.</p></div>
+      </div>
+    </div>
+    <div style="position:relative;height:172px;background:#0A1222;">
+      <svg width="100%" height="100%" viewBox="0 0 560 172" preserveAspectRatio="xMidYMid slice">
+        <rect width="560" height="172" fill="#0A1222"/>
+        <g stroke="#1FB6C9" stroke-width="1" opacity=".14">
+          <line x1="80" y1="0" x2="80" y2="172"/><line x1="200" y1="0" x2="200" y2="172"/>
+          <line x1="340" y1="0" x2="340" y2="172"/><line x1="470" y1="0" x2="470" y2="172"/>
+          <line x1="0" y1="50" x2="560" y2="50"/><line x1="0" y1="120" x2="560" y2="120"/>
+        </g>
+        <g fill="none" stroke="#16414C" stroke-width="14" opacity=".55" stroke-linecap="round">
+          <path d="M40,150 L40,60 L260,60 L260,30"/>
+          <path d="M260,60 L470,60 L470,130"/>
+        </g>
+        <path d="M64,150 L64,84 L260,84 L260,46" fill="none" stroke="#2DE0C8" stroke-width="3" stroke-dasharray="2 9" stroke-linecap="round" style="animation:dashMove 1.1s linear infinite;"/>
+        <g><circle cx="64" cy="150" r="11" fill="#0A1222" stroke="#fff" stroke-width="3"/><circle cx="64" cy="150" r="4" fill="#fff"/></g>
+        <g>
+          <circle cx="260" cy="40" r="14" fill="#2DE0C8" opacity=".25"><animate attributeName="r" values="11;20;11" dur="2s" repeatCount="indefinite"/></circle>
+          <circle cx="260" cy="40" r="9" fill="#2DE0C8"/>
+          <circle cx="260" cy="40" r="3.5" fill="#0A1222"/>
+        </g>
+        <text x="80" y="146" fill="#7FE8DA" font-size="11" font-family="Figtree" font-weight="700">YOU</text>
+        <text x="276" y="44" fill="#fff" font-size="11" font-family="Figtree" font-weight="700">STUDIO 3C</text>
+      </svg>
+      <div style="position:absolute;left:14px;top:14px;background:rgba(10,18,34,.7);backdrop-filter:blur(6px);border:1px solid rgba(127,232,218,.25);border-radius:11px;padding:8px 12px;">
+        <div style="font-size:10px;font-weight:700;letter-spacing:.08em;color:#7FE8DA;">DESTINATION</div>
+        <div style="font-size:13px;font-weight:700;color:#fff;margin-top:1px;">Floor 3 · North Wing</div>
+      </div>
+    </div>
+    <button class="btn-primary" style="width:100%;background:#0057B8;color:#fff;font-family:Figtree,sans-serif;font-weight:600;font-size:14px;padding:14px;border:none;cursor:pointer;">
+      <span class="ms" style="font-size:19px;">directions_walk</span>Generate Walking Path
+    </button>
+  </div>
+
+  <div class="card card-p">
+    <h3 style="margin:0 0 16px;font-size:15px;font-weight:700;">Studio Environment</h3>
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:9px;">
+      <span style="display:flex;align-items:center;gap:9px;font-size:14px;font-weight:600;color:#3A3947;"><span class="ms" style="font-size:20px;color:#0057B8;">thermostat</span>Temperature</span>
+      <span style="font-size:15px;font-weight:700;color:#0057B8;">${S.temp}°F</span>
+    </div>
+    <input type="range" min="65" max="78" value="${S.temp}" data-action="set-temp" style="margin-bottom:16px;">
+    <div style="display:flex;align-items:center;justify-content:space-between;padding-top:14px;border-top:1px solid #F0EFF6;">
+      <span style="display:flex;align-items:center;gap:9px;font-size:14px;font-weight:600;color:#3A3947;"><span class="ms" style="font-size:20px;color:#0057B8;">lightbulb</span>Presentation Lighting</span>
+      <button data-action="toggle-light" style="${trackStyle(lt)}"><span style="${knobStyle(lt)}"></span></button>
+    </div>
+    <p style="margin:8px 0 0 29px;font-size:12px;color:#9A98AC;">Dims main lights, focuses on the whiteboard.</p>
+  </div>`;
+}
+
+function renderAdhoc() {
+  const claimed = S.claimed;
+  const on = S.castOn;
+  return `
+  <div style="display:flex;align-items:center;gap:9px;font-size:11px;font-weight:700;letter-spacing:.08em;color:#0057B8;background:#EAF1FB;align-self:flex-start;padding:7px 13px;border-radius:999px;">
+    <span class="ms" style="font-size:16px;">my_location</span>INTENT PARSED · SCANNING FLOOR 4
+  </div>
+  <div class="card" style="border:2px solid #0057B8;box-shadow:0 12px 30px -16px rgba(0,87,184,.5);overflow:hidden;">
+    <div style="padding:18px;">
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;">
+        <div><h3 style="margin:0;font-size:19px;font-weight:700;">Huddle Room 412</h3><p style="margin:4px 0 0;font-size:13px;color:#8A899B;">25 ft away · Seats 4 · Digital Display</p></div>
+        <span style="display:flex;align-items:center;gap:6px;font-size:12px;font-weight:700;color:#1A9E63;background:#E6F7EE;padding:6px 11px;border-radius:999px;flex:none;">
+          <span style="position:relative;width:8px;height:8px;display:inline-block;"><span style="position:absolute;inset:0;border-radius:50%;background:#22C07A;"></span><span style="position:absolute;inset:0;border-radius:50%;background:#22C07A;animation:pulseRing 2s infinite;"></span></span>Empty
+        </span>
+      </div>
+      <div style="display:flex;align-items:center;justify-content:space-between;background:#F7F7FB;border-radius:14px;padding:13px 15px;margin-top:16px;">
+        <span style="display:flex;align-items:center;gap:10px;font-size:14px;font-weight:600;color:#3A3947;"><span class="ms" style="font-size:21px;color:#0057B8;">cast</span>Auto-cast screen on entry</span>
+        <button data-action="toggle-cast" style="${trackStyle(on)}"><span style="${knobStyle(on)}"></span></button>
+      </div>
+    </div>
+    ${claimed
+      ? `<div style="display:flex;align-items:center;justify-content:center;gap:8px;width:100%;background:#E6F7EE;color:#1A9E63;font-family:Figtree,sans-serif;font-weight:700;font-size:15px;padding:15px;border-top:1px solid rgba(22,164,99,.15);"><span class="ms" style="font-size:20px;">check_circle</span>Claimed — yours until 10:42 AM</div>`
+      : `<button data-action="claim-room" style="width:100%;border:none;background:#0057B8;color:#fff;font-family:Figtree,sans-serif;font-weight:700;font-size:15px;padding:15px;cursor:pointer;">Claim for 30 Minutes</button>`
+    }
+  </div>`;
+}
+
+function renderFacility() {
+  const done = S.ticketDone;
+  return `
+  <div class="card card-p">
+    <div style="display:flex;align-items:center;gap:13px;border-bottom:1px solid #F0EFF6;padding-bottom:15px;margin-bottom:15px;">
+      <div style="flex:none;width:44px;height:44px;border-radius:13px;background:#FDECEC;display:flex;align-items:center;justify-content:center;"><span class="ms" style="font-size:23px;color:#D84343;">coffee_maker</span></div>
+      <div style="flex:1;"><h3 style="margin:0;font-size:16px;font-weight:700;">Coffee Hub #892</h3><p style="margin:3px 0 0;font-size:12px;color:#8A899B;">Floor 2, Breakroom A · via BLE proximity</p></div>
+      <span style="font-size:11px;font-weight:700;color:#D84343;background:#FDECEC;padding:5px 10px;border-radius:999px;">OFFLINE</span>
+    </div>
+    <div class="label-xs" style="color:#9A98AC;margin-bottom:7px;">DIAGNOSTIC CODE</div>
+    <div style="background:#0F1117;border-radius:12px;padding:13px 15px;margin-bottom:12px;">
+      <div style="font-family:'JetBrains Mono',monospace;font-size:13px;color:#FF8C8C;font-weight:500;">ERR_WATER_PUMP_STALL</div>
+      <div style="font-size:12px;color:#9A98AC;margin-top:5px;line-height:1.5;">Failure in the internal water circulation line. Maintenance required.</div>
+    </div>
+    <div style="background:#F7F7FB;border-radius:12px;padding:12px 14px;margin-bottom:16px;">
+      <div class="label-xs" style="color:#9A98AC;margin-bottom:4px;">NOTES FROM YOUR PROMPT</div>
+      <div style="font-size:13px;color:#4B4A5C;font-style:italic;">"The coffee machine on floor 2 is broken."</div>
+    </div>
+    ${done
+      ? `<div style="display:flex;align-items:center;justify-content:center;gap:8px;background:#E6F7EE;color:#1A9E63;font-family:Figtree,sans-serif;font-weight:700;font-size:14px;padding:14px;border-radius:14px;"><span class="ms" style="font-size:20px;">check_circle</span>Ticket #FAC-4471 submitted</div>`
+      : `<button data-action="submit-ticket" style="width:100%;border:none;background:#D84343;color:#fff;font-family:Figtree,sans-serif;font-weight:700;font-size:15px;padding:14px;border-radius:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;"><span class="ms" style="font-size:19px;">build</span>Submit IT / Facilities Ticket</button>`
+    }
+  </div>
+  <div style="background:#EAF1FB;border-radius:18px;padding:15px 17px;display:flex;align-items:center;justify-content:space-between;gap:12px;">
+    <div>
+      <div class="label-xs" style="color:#0057B8;">ALTERNATIVE</div>
+      <div style="font-weight:700;font-size:14px;margin:2px 0;">East Wing Hub</div>
+      <div style="font-size:12px;color:#6B7A99;">Nearest working machine · 1 min walk</div>
+    </div>
+    <button style="flex:none;border:none;background:#0057B8;color:#fff;width:42px;height:42px;border-radius:13px;cursor:pointer;display:flex;align-items:center;justify-content:center;">
+      <span class="ms" style="font-size:21px;">near_me</span>
+    </button>
+  </div>`;
+}
+
+function renderGuest() {
+  const sent = S.credsDone;
+  const bev = S.bev;
+  return `
+  <div style="display:flex;align-items:center;gap:13px;background:linear-gradient(135deg,#0057B8,#1E73C8);color:#fff;border-radius:20px;padding:16px 18px;box-shadow:0 12px 28px -16px rgba(0,87,184,.6);">
+    <div style="flex:none;width:42px;height:42px;border-radius:13px;background:rgba(255,255,255,.18);display:flex;align-items:center;justify-content:center;"><span class="ms" style="font-size:23px;color:#fff;">person_pin_circle</span></div>
+    <div style="flex:1;">
+      <div style="display:flex;align-items:center;gap:8px;"><h3 style="margin:0;font-size:16px;font-weight:700;">Lobby Alert</h3><span style="font-size:10px;font-weight:600;background:rgba(255,255,255,.2);padding:2px 8px;border-radius:999px;">JUST NOW</span></div>
+      <p style="margin:3px 0 0;font-size:13px;color:rgba(255,255,255,.85);">Sarah Jenkins has arrived at the North Lobby.</p>
+    </div>
+  </div>
+
+  <div class="card card-p">
+    <h3 style="margin:0 0 4px;font-size:15px;font-weight:700;">Access Control</h3>
+    <p style="margin:0 0 14px;font-size:13px;color:#8A899B;">Provision guest network &amp; elevator pass for 4 hours.</p>
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:11px 0;border-top:1px solid #F0EFF6;">
+      <span style="display:flex;align-items:center;gap:9px;font-size:14px;font-weight:500;"><span class="ms" style="font-size:19px;color:#0057B8;">wifi</span>Wi-Fi Credentials</span>
+      <span style="font-size:12px;font-weight:700;color:${sent ? '#1A9E63' : '#C2410C'};">${sent ? 'Sent' : 'Pending'}</span>
+    </div>
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:11px 0;border-top:1px solid #F0EFF6;">
+      <span style="display:flex;align-items:center;gap:9px;font-size:14px;font-weight:500;"><span class="ms" style="font-size:19px;color:#0057B8;">elevator</span>Elevator Routing</span>
+      <span style="font-size:12px;color:#8A899B;font-weight:600;">Lobby → Studio 3C</span>
+    </div>
+    ${sent
+      ? `<div style="display:flex;align-items:center;justify-content:center;gap:8px;background:#E6F7EE;color:#1A9E63;font-family:Figtree,sans-serif;font-weight:700;font-size:14px;padding:14px;border-radius:14px;margin-top:14px;"><span class="ms" style="font-size:20px;">check_circle</span>Credentials Sent to Guest</div>`
+      : `<button data-action="send-creds" class="btn-primary" style="width:100%;margin-top:14px;background:#0057B8;color:#fff;font-family:Figtree,sans-serif;font-weight:700;font-size:14px;padding:14px;border-radius:14px;"><span class="ms" style="font-size:19px;">encrypted</span>Send Credentials to Guest</button>`
+    }
+  </div>
+
+  <div class="card card-p">
+    <h3 style="margin:0 0 4px;font-size:15px;font-weight:700;">Hospitality</h3>
+    <p style="margin:0 0 14px;font-size:13px;color:#8A899B;">Pre-order beverages for Studio 3C.</p>
+    <div style="display:flex;gap:9px;">
+      <button data-action="bev-coffee" style="${bevBtnStyle(bev==='coffee')}"><span class="ms" style="font-size:24px;">local_cafe</span>Coffee</button>
+      <button data-action="bev-water" style="${bevBtnStyle(bev==='water')}"><span class="ms" style="font-size:24px;">water_drop</span>Water</button>
+      <button data-action="bev-tea" style="${bevBtnStyle(bev==='tea')}"><span class="ms" style="font-size:24px;">emoji_food_beverage</span>Tea</button>
+    </div>
+  </div>`;
+}
+
+function renderCommute() {
+  const arriving = S.commuteMode === 'arrive';
+  const ev = S.evOn;
+  const seat = S.seatDone;
+
+  const busRows = arriving
+    ? [
+        { time: '8:05', route: 'Shuttle A · North Campus', occ: '12 seats', occC: '#1A9E63', occBg: '#E6F7EE' },
+        { time: '8:20', route: 'Express 42 · Downtown', occ: 'Filling', occC: '#C2410C', occBg: '#FDEFE6' },
+        { time: '8:35', route: 'Shuttle A · North Campus', occ: 'Open', occC: '#1A9E63', occBg: '#E6F7EE' },
+      ]
+    : [
+        { time: '5:10', route: 'Express 42 · Downtown', occ: '8 seats', occC: '#1A9E63', occBg: '#E6F7EE' },
+        { time: '5:25', route: 'Shuttle A · Park &amp; Ride', occ: 'Open', occC: '#1A9E63', occBg: '#E6F7EE' },
+        { time: '5:40', route: 'Express 42 · Downtown', occ: 'Filling', occC: '#C2410C', occBg: '#FDEFE6' },
+      ];
+
+  const parkTitle = arriving ? 'Spot Reserved' : 'Your Car';
+  const parkChip = arriving ? 'RESERVED' : 'PARKED 8:42 AM';
+  const parkDesc = arriving
+    ? 'Lot B · Level 2 · 3 min walk to the North elevator. Held for you until 9:15 AM.'
+    : 'Lot B · Level 2 · parked at 8:42 AM. 4 min walk from your desk.';
+  const parkBtn = arriving ? 'Navigate to Spot B-214' : 'Guide Me to My Car';
+  const parkOrigin = arriving ? 'ENTRANCE' : 'ELEVATOR';
+  const busDir = arriving ? 'INBOUND · PARK &amp; RIDE → HQ LOBBY' : 'OUTBOUND · HQ → PARK &amp; RIDE';
+
+  const busRowsHTML = busRows.map(b => `
+    <div style="display:flex;align-items:center;gap:13px;padding:11px 0;border-top:1px solid #F0EFF6;">
+      <div style="flex:none;width:52px;"><span style="font-size:15px;font-weight:700;color:#1A1A24;">${b.time}</span></div>
+      <div style="flex:1;min-width:0;font-size:13px;font-weight:500;color:#4B4A5C;">${b.route}</div>
+      <span style="flex:none;font-size:11px;font-weight:700;color:${b.occC};background:${b.occBg};padding:4px 9px;border-radius:999px;">${b.occ}</span>
+    </div>`).join('');
+
+  return `
+  <div style="display:flex;background:#EDECF5;border-radius:14px;padding:4px;gap:4px;">
+    <button data-action="commute-arrive" style="${segBtnStyle(arriving)}"><span class="ms" style="font-size:18px;">login</span>Arriving</button>
+    <button data-action="commute-leave" style="${segBtnStyle(!arriving)}"><span class="ms" style="font-size:18px;">logout</span>Leaving</button>
+  </div>
+
+  <div class="card" style="overflow:hidden;">
+    <div style="padding:18px 18px 14px;display:flex;align-items:flex-start;gap:13px;">
+      <div style="flex:none;width:42px;height:42px;border-radius:13px;background:#EAF1FB;display:flex;align-items:center;justify-content:center;"><span class="ms" style="font-size:23px;color:#0057B8;">local_parking</span></div>
+      <div style="flex:1;">
+        <div style="display:flex;align-items:center;gap:8px;">
+          <h3 style="margin:0;font-size:16px;font-weight:700;">${parkTitle}</h3>
+          <span style="font-size:10px;font-weight:700;letter-spacing:.05em;color:#0057B8;background:#EAF1FB;padding:3px 8px;border-radius:999px;">${parkChip}</span>
+        </div>
+        <p style="margin:4px 0 0;font-size:13px;color:#8A899B;line-height:1.5;">${parkDesc}</p>
+      </div>
+    </div>
+    <div style="position:relative;height:166px;background:#0A1222;">
+      <svg width="100%" height="100%" viewBox="0 0 560 166" preserveAspectRatio="xMidYMid slice">
+        <rect width="560" height="166" fill="#0A1222"/>
+        <g stroke="#1FB6C9" stroke-width="1" opacity=".1">
+          <line x1="0" y1="83" x2="560" y2="83"/><line x1="140" y1="0" x2="140" y2="166"/>
+          <line x1="280" y1="0" x2="280" y2="166"/><line x1="420" y1="0" x2="420" y2="166"/>
+        </g>
+        <g fill="none" stroke="#2A3550" stroke-width="1.5">
+          <rect x="44" y="26" width="44" height="30" rx="4"/><rect x="100" y="26" width="44" height="30" rx="4"/>
+          <rect x="156" y="26" width="44" height="30" rx="4"/><rect x="268" y="26" width="44" height="30" rx="4"/>
+          <rect x="324" y="26" width="44" height="30" rx="4"/><rect x="380" y="26" width="44" height="30" rx="4"/>
+          <rect x="44" y="112" width="44" height="30" rx="4"/><rect x="100" y="112" width="44" height="30" rx="4"/>
+          <rect x="212" y="112" width="44" height="30" rx="4"/><rect x="324" y="112" width="44" height="30" rx="4"/>
+          <rect x="380" y="112" width="44" height="30" rx="4"/>
+        </g>
+        <g fill="#19273F">
+          <rect x="44" y="26" width="44" height="30" rx="4"/><rect x="156" y="26" width="44" height="30" rx="4"/>
+          <rect x="324" y="26" width="44" height="30" rx="4"/><rect x="44" y="112" width="44" height="30" rx="4"/>
+          <rect x="324" y="112" width="44" height="30" rx="4"/><rect x="380" y="112" width="44" height="30" rx="4"/>
+        </g>
+        <rect x="212" y="26" width="44" height="30" rx="5" fill="#2DE0C8" opacity=".16">
+          <animate attributeName="opacity" values=".1;.28;.1" dur="2.2s" repeatCount="indefinite"/>
+        </rect>
+        <rect x="212" y="26" width="44" height="30" rx="5" fill="none" stroke="#2DE0C8" stroke-width="2"/>
+        <text x="234" y="45" fill="#7FE8DA" font-size="11" font-family="Figtree" font-weight="800" text-anchor="middle">B-214</text>
+        <path d="M30,150 L30,83 L234,83 L234,60" fill="none" stroke="#2DE0C8" stroke-width="3" stroke-dasharray="2 9" stroke-linecap="round" style="animation:dashMove 1.1s linear infinite;"/>
+        <circle cx="30" cy="150" r="9" fill="#0A1222" stroke="#fff" stroke-width="3"/>
+        <circle cx="30" cy="150" r="3.5" fill="#fff"/>
+        <text x="46" y="146" fill="#9FB0C8" font-size="10" font-family="Figtree" font-weight="700">${parkOrigin}</text>
+      </svg>
+    </div>
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:13px 18px;border-top:1px solid rgba(20,20,40,.06);">
+      <span style="display:flex;align-items:center;gap:9px;font-size:13px;font-weight:600;color:#3A3947;"><span class="ms" style="font-size:20px;color:#1A9E63;">ev_station</span>EV charger at this spot</span>
+      <button data-action="toggle-ev" style="${trackStyle(ev)}"><span style="${knobStyle(ev)}"></span></button>
+    </div>
+    <button class="btn-primary" style="width:100%;border:none;background:#0057B8;color:#fff;font-family:Figtree,sans-serif;font-weight:600;font-size:14px;padding:14px;cursor:pointer;">
+      <span class="ms" style="font-size:19px;">near_me</span>${parkBtn}
+    </button>
+  </div>
+
+  <div class="card card-p">
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:4px;">
+      <span class="ms" style="font-size:21px;color:#0057B8;">directions_bus</span>
+      <h3 style="margin:0;font-size:15px;font-weight:700;">Commuter Shuttle</h3>
+    </div>
+    <p style="margin:0 0 14px;font-size:12px;font-weight:600;letter-spacing:.02em;color:#8A899B;">${busDir}</p>
+    <div style="display:flex;flex-direction:column;">
+      ${busRowsHTML}
+    </div>
+    <button data-action="reserve-seat" style="width:100%;margin-top:15px;border:none;background:${seat ? '#1A9E63' : '#0057B8'};color:#fff;font-family:Figtree,sans-serif;font-weight:700;font-size:14px;padding:13px;border-radius:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;">
+      <span class="ms" style="font-size:19px;">${seat ? 'check_circle' : 'event_seat'}</span>${seat ? 'Seat Reserved' : 'Reserve a Seat'}
+    </button>
+  </div>`;
+}
+
+// ─── Segment renderer ─────────────────────────────────────────────────────────
+function renderSeg(f) {
+  const intro = introMap[f.kind] || '';
+  let cardHTML = '';
+  if (f.kind === 'home')     cardHTML = renderHome();
+  if (f.kind === 'agenda')   cardHTML = renderAgenda();
+  if (f.kind === 'arrival')  cardHTML = renderArrival();
+  if (f.kind === 'adhoc')    cardHTML = renderAdhoc();
+  if (f.kind === 'facility') cardHTML = renderFacility();
+  if (f.kind === 'guest')    cardHTML = renderGuest();
+  if (f.kind === 'commute')  cardHTML = renderCommute();
+
+  const promptHTML = f.prompt
+    ? `<div style="display:flex;justify-content:flex-end;">
+        <div style="max-width:80%;background:#0057B8;color:#fff;font-size:15px;font-weight:500;padding:11px 16px;border-radius:20px 20px 4px 20px;box-shadow:0 4px 14px -6px rgba(0,87,184,.5);">${esc(f.prompt)}</div>
+      </div>`
+    : '';
+
+  const bodyHTML = f.streaming
+    ? `<div style="display:inline-flex;gap:5px;align-items:center;background:#fff;padding:13px 16px;border-radius:4px 18px 18px 18px;border:1px solid rgba(20,20,40,.06);box-shadow:0 2px 10px -6px rgba(20,20,40,.2);">
+        <span style="width:7px;height:7px;border-radius:50%;background:#9A98AC;animation:dotB 1.3s infinite;"></span>
+        <span style="width:7px;height:7px;border-radius:50%;background:#9A98AC;animation:dotB 1.3s infinite .18s;"></span>
+        <span style="width:7px;height:7px;border-radius:50%;background:#9A98AC;animation:dotB 1.3s infinite .36s;"></span>
+      </div>`
+    : `<div style="display:flex;flex-direction:column;gap:14px;">
+        <p style="margin:0;font-size:15px;line-height:1.5;color:#3A3947;font-weight:500;">${intro}</p>
+        ${cardHTML}
+      </div>`;
+
+  return `
+  <div class="feed-seg">
+    ${promptHTML}
+    <div style="display:flex;gap:11px;align-items:flex-start;">
+      <div style="flex:none;width:34px;height:34px;border-radius:11px;background:linear-gradient(135deg,#0057B8,#19B7E8);display:flex;align-items:center;justify-content:center;box-shadow:0 4px 12px -4px rgba(0,87,184,.55);margin-top:2px;">
+        <span class="ms" style="font-size:20px;color:#fff;">auto_awesome</span>
+      </div>
+      <div style="flex:1;min-width:0;">
+        ${bodyHTML}
+      </div>
+    </div>
+  </div>`;
+}
+
+// ─── Chips ────────────────────────────────────────────────────────────────────
+const CHIPS = [
+  { label: 'My agenda',             text: 'Show my agenda' },
+  { label: 'I just arrived',        text: 'I just arrived at HQ' },
+  { label: 'Find a huddle room',    text: 'Find me an available huddle room' },
+  { label: 'Coffee machine broken', text: 'The coffee machine on floor 2 is broken' },
+  { label: 'My guest arrived',      text: 'My guest Sarah has arrived' },
+  { label: 'Parking & shuttle',     text: 'Help me with parking and my commute' },
+];
+
+function renderChips() {
+  return CHIPS.map(c =>
+    `<button class="chip-btn" data-chip="${esc(c.text)}" style="flex:none;border:1px solid rgba(20,20,40,.1);background:#fff;color:#3A3947;font-family:Figtree,sans-serif;font-size:13px;font-weight:500;padding:9px 15px;border-radius:999px;cursor:pointer;white-space:nowrap;box-shadow:0 2px 8px -6px rgba(20,20,40,.3);">${esc(c.label)}</button>`
+  ).join('');
+}
+
+// ─── Main render ──────────────────────────────────────────────────────────────
+function renderFeed() {
+  const inner = document.getElementById('feed-inner');
+  if (!inner) return;
+
+  const feedHTML = S.feed.map(f => renderSeg(f)).join('');
+  inner.innerHTML = feedHTML + '<div style="height:4px;"></div>';
+
+  // Update chips visibility (show only on first load / home)
+  const chipRow = document.getElementById('chip-row');
+  if (chipRow) {
+    const showChips = S.feed.length <= 1;
+    chipRow.style.display = showChips ? 'flex' : 'none';
+    if (showChips) chipRow.innerHTML = renderChips();
+  }
+
+  // Restore input value
+  const inp = document.getElementById('input-field');
+  if (inp) inp.value = S.input;
+
+  // Restore range input
+  const rangeInputs = inner.querySelectorAll('input[type=range]');
+  rangeInputs.forEach(r => { if (r.dataset.action === 'set-temp') r.value = S.temp; });
+}
+
+// ─── Event delegation ─────────────────────────────────────────────────────────
+document.addEventListener('click', (e) => {
+  const tgt = e.target.closest('[data-action]');
+  if (tgt) {
+    const action = tgt.dataset.action;
+    if (action === 'toggle-light')   set(s => ({ lightOn: !s.lightOn }));
+    if (action === 'toggle-dnd')     set(s => ({ dndOn: !s.dndOn }));
+    if (action === 'toggle-cast')    set(s => ({ castOn: !s.castOn }));
+    if (action === 'claim-room')     set({ claimed: true });
+    if (action === 'submit-ticket')  set({ ticketDone: true });
+    if (action === 'send-creds')     set({ credsDone: true });
+    if (action === 'bev-coffee')     set({ bev: 'coffee' });
+    if (action === 'bev-water')      set({ bev: 'water' });
+    if (action === 'bev-tea')        set({ bev: 'tea' });
+    if (action === 'commute-arrive') set({ commuteMode: 'arrive' });
+    if (action === 'commute-leave')  set({ commuteMode: 'leave' });
+    if (action === 'toggle-ev')      set(s => ({ evOn: !s.evOn }));
+    if (action === 'reserve-seat')   set(s => ({ seatDone: !s.seatDone }));
+    if (action === 'open-agenda')    push('Show my full agenda', 'agenda');
+    return;
+  }
+
+  const chip = e.target.closest('[data-chip]');
+  if (chip) {
+    const text = chip.dataset.chip;
+    push(text, route(text));
+    return;
+  }
+
+  if (e.target.closest('#btn-go-home') || e.target.closest('#btn-new')) {
+    goHome();
+  }
+});
+
+document.addEventListener('input', (e) => {
+  if (e.target.id === 'input-field') {
+    S.input = e.target.value;
+    return;
+  }
+  const tgt = e.target.closest('[data-action]');
+  if (tgt && tgt.dataset.action === 'set-temp') {
+    set({ temp: +tgt.value });
+  }
+});
+
+document.getElementById('input-form').addEventListener('submit', (e) => {
+  e.preventDefault();
+  const text = S.input.trim();
+  if (!text) return;
+  push(text, route(text));
+});
+
+// ─── Init ─────────────────────────────────────────────────────────────────────
+renderFeed();
+
+// Scroll to bottom after new content
+const feedMain = document.getElementById('feed-main');
+const observer = new MutationObserver(() => {
+  feedMain.scrollTo({ top: feedMain.scrollHeight, behavior: 'smooth' });
+});
+observer.observe(document.getElementById('feed-inner'), { childList: true });
+</script>
+</body>
+</html>
