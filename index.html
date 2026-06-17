@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>GenUI Portal – AT&amp;T Workplace</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -25,11 +25,11 @@ input[type=range]::-moz-range-thumb{width:20px;height:20px;border-radius:999px;b
 @keyframes dashMove{to{stroke-dashoffset:-24}}
 @keyframes sweep{0%{opacity:.25}50%{opacity:.9}100%{opacity:.25}}
 
-#app{display:flex;flex-direction:column;height:100vh;overflow:hidden;}
+#app{display:flex;flex-direction:column;height:100vh;height:100dvh;overflow:hidden;}
 #feed-header{flex:none;display:flex;align-items:center;justify-content:space-between;padding:14px 20px;background:rgba(250,249,255,.82);backdrop-filter:blur(14px);border-bottom:1px solid rgba(20,20,40,.07);z-index:20;}
 #feed-main{flex:1;overflow-y:auto;overflow-x:hidden;}
 #feed-inner{max-width:600px;margin:0 auto;padding:24px 18px 28px;display:flex;flex-direction:column;gap:26px;}
-#input-area{flex:none;background:linear-gradient(to top,#FAF9FF 62%,rgba(250,249,255,0));padding:8px 18px 18px;z-index:20;}
+#input-area{flex:none;background:linear-gradient(to top,#FAF9FF 62%,rgba(250,249,255,0));padding:8px 18px max(18px, env(safe-area-inset-bottom));z-index:20;}
 #input-wrap{max-width:600px;margin:0 auto;}
 .chip-row{display:flex;gap:8px;overflow-x:auto;padding:4px 0 11px;scrollbar-width:none;}
 .chip-row::-webkit-scrollbar{display:none;}
